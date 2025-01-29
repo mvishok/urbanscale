@@ -1,293 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Location Rating</title>
+    <title>LocaRank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(to bottom right, #a78bfa, #ec4899, #fbbf24);
+            min-height: 100vh;
         }
 
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 100%;
-            max-width: 400px;
+        .main {
+            width: 90%;
+            max-width: 1200px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        .card-title {
-            font-size: 24px;
-            font-weight: bold;
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #1f2937;
+            color: white;
+        }
+
+        .navbar .logo img {
+            width: 100px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #f9fafb;
+            font-size: 18px;
+            font-weight: 400;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #5caeff;
+        }
+
+        .info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .ranker {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: #e5e7eb;
+            padding: 50px;
+            border-radius: 15px;
             text-align: center;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        h2 {
+            color: #111827;
+            font-size: 28px;
             margin-bottom: 20px;
         }
 
-        .button-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .button {
-            background-color: #f3f4f6;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
-            padding: 10px;
+        .input-field-wrapper {
+            position: relative;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            margin-bottom: 20px;
         }
 
-        .button:hover {
-            background-color: #e5e7eb;
-        }
-
-        .button-icon {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        input {
+        .input-field {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #d1d5db;
-            border-radius: 4px;
+            padding: 15px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            background: #ffffff;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
         }
 
-        .submit-button {
-            background-color: #3b82f6;
-            color: white;
+        .input-field:focus {
+            border-color: #6D28D9;
+        }
+
+        .location-btn {
+            position: absolute;
+            right: 10px;
+            background: none;
             border: none;
-            border-radius: 4px;
-            padding: 10px;
-            width: 100%;
             cursor: pointer;
+            font-size: 20px;
+            color: #6D28D9;
         }
 
-        .submit-button:hover {
-            background-color: #2563eb;
+        .get-score {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: #6D28D9;
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
         }
 
-        .rating-item {
-            margin-bottom: 10px;
+        .get-score:hover {
+            background-color: #5caeff;
         }
 
-        .stars {
-            color: #d1d5db;
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .stars.filled {
-            color: #fbbf24;
-        }
-
-        .error {
-            color: #ef4444;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .logo {
-            width: 100px;
-            height: auto;
-            display: block;
-            margin: 0 auto 20px;
-        }
-
-        .logo-corner {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 150px;
-            /* Increased size */
-            height: auto;
-            z-index: 1000;
+        .hero-img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-
 <body>
-    <div class="card">
-        <div id="purposeScreen">
-            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/_10f6b6e6-55f8-40f5-8637-58844b4f5412-removebg-preview%20(1)-q9CxXrzd734ngevoKd7qE1pyFzjLZV.png"
-                alt="Urban Scale Logo" class="logo">
-            <h2 class="card-title">Why are you using this software?</h2>
-            <div class="button-grid">
-                <button class="button" onclick="selectPurpose('Residential')">
-                    <span class="button-icon">🏠</span> Residential </button>
-                <button class="button" onclick="selectPurpose('Business')">
-                    <span class="button-icon">💼</span> Business </button>
-                <button class="button" onclick="selectPurpose('Entertainment')">
-                    <span class="button-icon">🎵</span> Entertainment </button>
-                <button class="button" onclick="selectPurpose('Vacation')">
-                    <span class="button-icon">🌴</span> Vacation </button>
+    <div class="main">
+        <nav class="navbar">
+            <div class="logo">
+                <img src="/static/locarank.png" alt="Logo">
+            </div>
+            <div class="nav-links">
+                <a href="#about">ABOUT</a>
+                <a href="#contact">CONTACT</a>
+            </div>
+        </nav>
+
+        <div class="info">
+            <div class="ranker">
+                <div class="container">
+                    <h2>Enter Location</h2>
+                    <div class="input-field-wrapper">
+                        <input type="text" placeholder="Latitude" id="latitude" class="input-field">
+                        <button class="location-btn" onclick="getLocation('latitude', 'longitude')">📍</button>
+                    </div>
+                    <div class="input-field-wrapper">
+                        <input type="text" placeholder="Longitude" id="longitude" class="input-field">
+                        <button class="location-btn" onclick="getLocation('latitude', 'longitude')">📍</button>
+                    </div>
+                    <div class="input-field-wrapper">
+                        <input type="text" placeholder="Prompt" id="prompt" class="input-field">
+                    </div>
+                    <button class="get-score" onclick="window.location.href='result.html'">Get Score</button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="/static/hero.jpg" alt="Landscape" class="hero-img">
             </div>
         </div>
-        <div id="inputScreen" style="display: none;">
-            <h2 class="card-title">Enter Location</h2>
-            <form id="locationForm">
-                <div class="form-group">
-                    <label for="latitude">Latitude</label>
-                    <input type="text" id="latitude" placeholder="Enter latitude (-90 to 90)" required>
-                </div>
-                <div class="form-group">
-                    <label for="longitude">Longitude</label>
-                    <input type="text" id="longitude" placeholder="Enter longitude (-180 to 180)" required>
-                </div>
-                <br>
-                <button type="button" class="submit-button" style="margin-bottom: 5px;" onclick="getLocation()">Use Current Location</button>
-                <br>
-                <button type="submit" class="submit-button">Get Rating</button>
-            </form>
-        </div>
-        <div id="ratingScreen" style="display: none;">
-            <h2 class="card-title">Location Ratings</h2>
-            <div id="ratings"></div>
-            <div id="finalScore" style="text-align: center; margin-top: 20px;"></div>
-            <button onclick="resetApp()" class="submit-button" style="margin-top: 20px;">Rate Another Location</button>
-        </div>
-        <div id="error" class="error"></div>
     </div>
-    <img id="cornerLogo"
-        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/_10f6b6e6-55f8-40f5-8637-58844b4f5412-removebg-preview%20(1)-q9CxXrzd734ngevoKd7qE1pyFzjLZV.png"
-        alt="Urban Scale Logo" class="logo-corner" style="display: none;">
     <script>
-        let purpose = '';
-
-        function selectPurpose(selectedPurpose) {
-            purpose = selectedPurpose;
-            document.getElementById('purposeScreen').style.display = 'none';
-            document.getElementById('inputScreen').style.display = 'block';
-            document.getElementById('cornerLogo').style.display = 'block';
-            document.querySelector('#inputScreen .card-title').textContent = `Enter Location for ${purpose}`;
-        }
-
-        document.getElementById('locationForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const latitude = parseFloat(document.getElementById('latitude').value);
-            const longitude = parseFloat(document.getElementById('longitude').value);
-
-            if (isNaN(latitude) || isNaN(longitude) || latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
-                document.getElementById('error').textContent = "Please enter valid latitude (-90 to 90) and longitude (-180 to 180) values.";
-                return;
-            }
-
-            document.getElementById('error').textContent = "";
-            fetchRatings(latitude, longitude, purpose);
-        });
-
-        function fetchRatings(lat, lon, purpose) {
-            // Simulate API request
-            fetch(`/score?latitude=${lat}&longitude=${lon}&purpose=${purpose}`)
-                .then(response => response.json())
-                .then(data => {
-                    const ratings = processApiResponse(data);
-                    displayRatings(ratings);
-                })
-                .catch(error => {
-                    console.log(error);
-                    document.getElementById('error').textContent = "Failed to retrieve ratings. Please try again.";
+        function getLocation(latId, longId) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById(latId).value = position.coords.latitude;
+                    document.getElementById(longId).value = position.coords.longitude;
                 });
-        }
-
-        function processApiResponse(data) {
-            // Process the API response and return the ratings object
-
-            return {
-                Education: data.category.Education,
-                Healthcare: data.category.Healthcare,
-                Finance: data.category.Finance,
-                Entertainment: data.category.Entertainment,
-                Safety: data.category.Safety,
-            };
-        }
-
-        function displayRatings(ratings) {
-            document.getElementById('inputScreen').style.display = 'none';
-            document.getElementById('ratingScreen').style.display = 'block';
-
-            const ratingsDiv = document.getElementById('ratings');
-            ratingsDiv.innerHTML = '';
-
-            const maxValues = {
-                education: 5.3,
-                entertainment: 60.8,
-                finance: 80,
-                healthcare: 130,
-                safety: 0.3
-            };
-
-            for (const [category, rating] of Object.entries(ratings)) {
-                const maxRating = maxValues[category.toLowerCase()];
-                const normalizedRating = Math.round((rating / maxRating) * 5); // Normalize to a scale of 5
-                const ratingItem = document.createElement('div');
-                const percentageRating = ((rating / maxRating) * 100).toFixed(2);
-                console.log(rating);
-                console.log(category, rating, maxRating);
-                ratingItem.className = 'rating-item';
-                ratingItem.innerHTML = `
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>${category}</span>
-                        <span>${percentageRating}%</span>
-                    </div>
-                `;
-                ratingsDiv.appendChild(ratingItem);
+            } else {
+                alert("Geolocation is not supported by this browser.");
             }
-
-            const finalScore = calculateFinalScore(ratings);
-    document.getElementById('finalScore').innerHTML = `
-        <p style="font-size: 18px; font-weight: bold;">Final Score</p>
-        <p style="font-size: 24px; font-weight: bold; color: #3b82f6;">${((finalScore / 276.4) * 100).toFixed(2)}%</p>
-    `;
         }
+        document.querySelector('.get-score').addEventListener('click', function() {
+            const latitude = document.getElementById('latitude').value;
+            const longitude = document.getElementById('longitude').value;
+            const prompt = document.getElementById('prompt').value;
 
-        function calculateFinalScore(ratings) {
-            const totalScore = Object.values(ratings).reduce((sum, rating) => sum + rating, 0);
-            return Math.round(totalScore);
-        }
-
-        function resetApp() {
-            document.getElementById('ratingScreen').style.display = 'none';
-            document.getElementById('purposeScreen').style.display = 'block';
-            document.getElementById('cornerLogo').style.display = 'none';
-            document.getElementById('latitude').value = '';
-            document.getElementById('longitude').value = '';
-            purpose = '';
-        }
-
-
-        function getLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition);
-        }
-        }
-
-        function showPosition(position) {
-            document.getElementById('latitude').value = position.coords.latitude;
-            document.getElementById('longitude').value = position.coords.longitude;
-        }
-
+            fetch(`/score?latitude=${latitude}&longitude=${longitude}&prompt=${prompt}`)
+            .then(response => response.json())
+            .then(data => {
+                window.location.href = `/result.html?score=${data.score}`;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
     </script>
 </body>
+</html>

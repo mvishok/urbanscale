@@ -1,24 +1,10 @@
 import colorama
 from colorama import Fore, Style
-import factors.const as const
-from factors import education, finance, health, entertainment, safety
 from flask import Flask, request, render_template
-
 from flasgger import Swagger
+from factors import req
 
 colorama.init(autoreset=True)
-
-def calculate_total_score(scores):
-    total_score = 0
-
-    for category, score in scores.items():
-        weight = const.CATEGORY.get(category, 0)
-        total_score += score * weight
-    
-    # map 486.1 to 100
-    total_score = (total_score / 486.1) * 100
-    
-    return total_score
 
 app = Flask(__name__)
 app.config['url_sort_key'] = None
@@ -36,10 +22,10 @@ swagger = Swagger(app)
 @app.route('/score')
 def score():
     """
-    Endpoint to get total score for a given latitude and longitude
+    Endpoint to get place data for a given latitude and longitude
     ---
-    summary: Get total score for a location
-    description: This endpoint calculates the total score for a given location based on the latitude and longitude provided.
+    summary: Get place data for a location
+    description: This endpoint retrieves place data for a given location based on the latitude and longitude provided.
     consumes:
       - application/json
     parameters:
@@ -55,29 +41,7 @@ def score():
         description: The longitude of the location.
     responses:
       200:
-        description: The total score and category-wise scores.
-        schema:
-          id: score
-          properties:
-            total_score:
-              type: number
-              description: The total score for the location.
-            category:
-              type: object
-              description: The category-wise scores.
-              properties:
-                Education:
-                  type: number
-                  description: The education score.
-                Healthcare:
-                  type: number
-                  description: The healthcare score.
-                Finance:
-                  type: number
-                  description: The finance score.
-                Entertainment:
-                  type: number
-                  description: The entertainment score.
+        description: The place data.
       400:
         description: Error message.
     """
@@ -85,30 +49,26 @@ def score():
     if 'latitude' not in request.args or 'longitude' not in request.args:
         return 'Error: Please provide both latitude and longitude.', 400
 
-    # get the latitude and longitude from the query parameters
     latitude = float(request.args.get('latitude'))
     longitude = float(request.args.get('longitude'))
 
-    category_scores = {
-        'Education': education.get_education(latitude, longitude, Fore, Style),
-        'Healthcare': health.get_health(latitude, longitude, Fore, Style),
-        'Finance': finance.get_finance(latitude, longitude, Fore, Style),
-        'Entertainment': entertainment.get_entertainment(latitude, longitude, Fore, Style),
-        'Safety': safety.get_safety(latitude, longitude, Fore, Style)
-    }
-
-    total_score = calculate_total_score(category_scores)
-
-    result = {
-        'total_score': total_score,
-        'category': category_scores
-    }
-
-    return result
+    score, count = req.get_places(latitude, longitude)
+    
+    return {
+        "score": score,
+        "count": count
+    } if count else ('Error fetching place data.', 500)
 
 @app.route('/v')
 def version():
     return render_template('index.html')
+
+@app.route('/result')
+def result():
+    score = request.args.get('score')
+    text = request.args.get('text')
+
+    return render_template('result.html', score=score, text=text)
     
 if __name__ == '__main__':
     app.run('0.0.0.0', port=80, debug=True)
