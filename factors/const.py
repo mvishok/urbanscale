@@ -135,7 +135,7 @@ CATEGORY = {
 }
 
 MAX_COUNTS = {
-    "education": {"school": 3, "university": 2, "library": 2, "college": 2},
+    "education": {"school": 3, "university": 1, "library": 2, "college": 2},
     "healthcare": {"hospital": 2, "pharmacy": 3, "dentist": 3},
     "public_transport": {"train": 2, "bus": 3, "subway": 2, "tram": 2, "ferry": 1},
     "highway": {"residential": 5, "motorway": 3, "trunk": 3, "primary": 3, "path": 3, "public":1, "busway": 1},

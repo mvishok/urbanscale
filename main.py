@@ -14,7 +14,6 @@ CATEGORY_AMENITIES = {
 
 def calculate_marks(raw_score, max_marks):
     """Calculate marks for a given amenity based on the city's performance."""
-    print(f"raw_score: {raw_score}, max_marks: {max_marks}")  # Debug line
     return min(raw_score / max_marks, 1.0) * max_marks
 
 def calculate_category_marks(raw_score, weights):

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Result</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
     <style>
         * {
             margin: 0;
@@ -12,7 +13,6 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-
         body {
             background: #f5f5f5;
             display: flex;
@@ -20,31 +20,17 @@
             align-items: center;
             min-height: 100vh;
         }
-
         .main {
             width: 90%;
             max-width: 600px;
             background: #ffffff;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
             text-align: center;
             padding: 40px 20px;
         }
-
-        h1 {
-            color: #111827;
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-
-        .percentage {
-            font-size: 48px;
-            color: #6D28D9;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
+        h1 { color: #111827; font-size: 32px; margin-bottom: 20px; }
+        .percentage { font-size: 48px; color: #6D28D9; font-weight: bold; margin-bottom: 20px; }
         .report {
             text-align: left;
             background: #e5e7eb;
@@ -54,13 +40,14 @@
             overflow-y: auto;
             max-height: 200px;
         }
-
-        .report p {
-            font-size: 18px;
-            line-height: 1.6;
-            color: #374151;
+        .chart-container {
+            margin-top: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
-
+        canvas { width: 100% !important; height: auto !important; }
         .back-btn {
             margin-top: 20px;
             padding: 15px;
@@ -73,24 +60,7 @@
             cursor: pointer;
             transition: 0.3s;
         }
-
-        .back-btn:hover {
-            background-color: #5caeff;
-        }
-
-        @media (max-width: 600px) {
-            .report p {
-                font-size: 16px;
-            }
-
-            .percentage {
-                font-size: 40px;
-            }
-
-            h1 {
-                font-size: 28px;
-            }
-        }
+        .back-btn:hover { background-color: #5caeff; }
     </style>
 </head>
 <body>
@@ -102,9 +72,54 @@
             <p>{{ line }}</p>
             {% endfor %}
         </div>
+        <div class="chart-container">
+            <canvas id="resultChart"></canvas>
+        </div>
         <button class="back-btn" onclick="window.location.href='/v'">Back to Home</button>    
     </div>
-        
-    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const counts = JSON.parse('{{counts|tojson}}');  // Default to empty object if undefined
+    if (!counts || typeof counts !== 'object') {
+        console.error('Counts is not a valid object:', counts);
+        return;  // Exit if counts is invalid
+    }
+
+    const categories = Object.keys(counts);
+    const subcategories = {};
+    const colors = ["#6D28D9", "#FF5733", "#4CAF50", "#2196F3", "#FFC107", "#FF9800", "#E91E63", "#009688", "#3F51B5", "#CDDC39"];
+    
+    categories.forEach(category => {
+        Object.entries(counts[category] || {}).forEach(([key, value]) => {
+            subcategories[key] = (subcategories[key] || 0) + value;
+        });
+    });
+    
+    const labels = Object.keys(subcategories);
+    const dataValues = Object.values(subcategories);
+    const backgroundColors = labels.map((_, i) => colors[i % colors.length]);
+    
+    new Chart(document.getElementById('resultChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Occurrences',
+                data: dataValues,
+                backgroundColor: backgroundColors,
+                borderColor: backgroundColors.map(color => color.replace("0.6", "1")),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } },
+            plugins: { legend: { display: false } }
+        }
+    });
+});
+
+    </script>
 </body>
 </html>

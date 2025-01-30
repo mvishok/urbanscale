@@ -51,24 +51,33 @@ def score():
 
     latitude = float(request.args.get('latitude'))
     longitude = float(request.args.get('longitude'))
+    prompt = request.args.get('prompt')
 
-    score, count = req.get_places(latitude, longitude)
-    
+    score, text, stats = req.get_places(latitude, longitude, prompt)
     return {
-        "score": score,
-        "count": count
-    } if count else ('Error fetching place data.', 500)
+      "score": round(score, 2),
+      "text": text,
+      "stats": stats
+    } if text else ('Error fetching place data.', 500)
 
 @app.route('/v')
 def version():
     return render_template('index.html')
 
+import json
+
 @app.route('/result')
 def result():
     score = request.args.get('score')
     text = request.args.get('text')
+    stats = request.args.get('stats')
 
-    return render_template('result.html', score=score, text=text)
-    
+    # URL decode the stats (JSON.stringify) and then load it into a dictionary
+    stats = json.loads(stats)  # Safely parse the JSON
+
+    return render_template('result.html', score=score, text=text, counts=stats)
+
+context = ("certificate.pem", "key.pem")
+
 if __name__ == '__main__':
-    app.run('0.0.0.0', port=80, debug=True)
+    app.run('0.0.0.0', port=80, debug=False, ssl_context=("cert.pem", "key.pem"))

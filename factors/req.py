@@ -6,7 +6,7 @@ import requests
 categories = ','.join(const.WEIGHTS.keys())
 # Get radius from const.RADIUS
 radius = const.RADIUS
-def get_places(lat, long):
+def get_places(lat, long, prompt):
     url = f'https://api.geoapify.com/v2/places?categories={categories}&filter=circle:{long},{lat},{radius}&bias=proximity:{long},{lat}&apiKey=36afeb9345404476b4fac169a81f6ed5'
     response = requests.get(url)
 
@@ -43,5 +43,5 @@ def get_places(lat, long):
             else:
                 fixed_subs[sub] = count
         fixed_category_counts[main] = fixed_subs
-
-    return score.calculate_scores(fixed_category_counts), fixed_category_counts
+    final_score, text = score.calculate_scores(fixed_category_counts, prompt)
+    return final_score, text, fixed_category_counts

@@ -159,8 +159,9 @@
                 <img src="/static/locarank.png" alt="Logo">
             </div>
             <div class="nav-links">
-                <a href="#about">ABOUT</a>
-                <a href="#contact">CONTACT</a>
+                <a href="index.html">HOME</a>
+                <a href="about.html">ABOUT</a>
+                <a href="contacts.html">CONTACT</a>
             </div>
         </nav>
 
@@ -179,7 +180,7 @@
                     <div class="input-field-wrapper">
                         <input type="text" placeholder="Prompt" id="prompt" class="input-field">
                     </div>
-                    <button class="get-score" onclick="window.location.href='result.html'">Get Score</button>
+                    <button class="get-score">Get Score</button>
                 </div>
             </div>
             <div class="hero-image">
@@ -206,7 +207,8 @@
             fetch(`/score?latitude=${latitude}&longitude=${longitude}&prompt=${prompt}`)
             .then(response => response.json())
             .then(data => {
-                window.location.href = `/result.html?score=${data.score}`;
+                const stats = encodeURIComponent(JSON.stringify(data.stats));
+                window.location.href = `/result?score=${data.score}&text=${data.text}&stats=${stats}`;
             })
             .catch(error => {
                 console.error('Error:', error);
