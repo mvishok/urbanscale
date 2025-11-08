@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { 
+  color-scheme: dark; 
+}
+
+body { 
+  @apply bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+}
+
+.card { 
+  @apply bg-slate-900/60 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-slate-800/50;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  @apply border-indigo-500/30 shadow-indigo-500/10;
+  transform: translateY(-2px);
+}
+
+.btn-primary { 
+  @apply bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500;
+  @apply px-6 py-3 rounded-2xl font-semibold shadow-lg shadow-indigo-500/30;
+  @apply transition-all duration-300 transform hover:scale-105 active:scale-95;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+}
+
+.btn-secondary { 
+  @apply bg-slate-800/80 hover:bg-slate-700 backdrop-blur;
+  @apply px-5 py-2.5 rounded-xl font-medium shadow-lg;
+  @apply transition-all duration-200 hover:shadow-xl;
+}
+
+.input-field {
+  @apply p-4 rounded-2xl bg-slate-800/60 backdrop-blur border border-slate-700/50;
+  @apply focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none;
+  @apply transition-all duration-200;
+  @apply placeholder:text-slate-500;
+}
+
+#map { 
+  height: 320px;
+  border-radius: 1.5rem; 
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 768px) {
+  #map {
+    height: 420px;
+  }
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* Glow effect */
+.glow {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+}
+
+/* Smooth scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.5);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.7);
+}
