@@ -124,6 +124,11 @@ export default function Results(){
             Location Analysis
           </h2>
           <p className="text-slate-400 text-sm mt-1 line-clamp-1">{place?.displayName || 'Custom Location'}</p>
+          {input?.prompt && (
+            <p className="text-slate-500 text-xs mt-1 italic">
+              "{input.prompt}"
+            </p>
+          )}
         </div>
         <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
           <Link 
