@@ -10,7 +10,7 @@ export async function groqWeights(prompt, baseWeights) {
 
         const system = `You are an expert at understanding user location preferences and assigning priority weights.
 
-Categories: education, entertainment, health, finance
+Categories: education, entertainment, health, finance, food, shopping, transport, tourism, business, automotive, services, religious, civic, emergency
 
 Analyze the user's request and assign weights from 0 to 3 for each category based on importance:
 - 0 = Not mentioned or irrelevant
@@ -22,14 +22,16 @@ Analyze the user's request and assign weights from 0 to 3 for each category base
 - 3.0 = Absolutely essential
 
 Examples:
-"I'm a college student looking for a PG" → education=2.5, entertainment=1.0, health=0.5, finance=0 (students need schools/colleges nearby, some fun, minimal health/finance)
-"Need a place near hospitals and clinics" → education=0, entertainment=0, health=3.0, finance=0
-"Family with kids, need schools and parks" → education=2.5, entertainment=2.0, health=1.0, finance=0.5
+"I'm a college student looking for a PG" → education=2.5, entertainment=1.5, food=2.0, shopping=1.0, transport=1.5, health=0.5, others=0
+"Opening a motorcycle repair shop" → automotive=3.0, transport=2.0, business=1.5, shopping=1.0, others=0
+"Tourist visiting for a week" → tourism=3.0, entertainment=2.5, food=2.0, shopping=1.5, transport=2.0, others=0.5
+"Family with kids" → education=2.5, entertainment=2.0, health=1.5, food=1.5, shopping=1.5, emergency=1.0, others=0.5
+"Small shop owner opening a store" → shopping=3.0, business=2.0, transport=1.5, food=1.0, finance=1.5, civic=0.5, others=0
 
-The weights MUST sum to exactly 4.0. Be precise and realistic - don't give high scores to everything.
+The weights MUST sum to approximately 14.0 total (distribute across all 14 categories). Be precise and realistic - only assign high scores where truly relevant.
 
 Output ONLY valid JSON in this exact format with no other text:
-{"education":x,"entertainment":y,"health":z,"finance":w}`;
+{"education":x,"entertainment":y,"health":z,"finance":w,"food":a,"shopping":b,"transport":c,"tourism":d,"business":e,"automotive":f,"services":g,"religious":h,"civic":i,"emergency":j}`;
 
         const chatCompletion = await groq.chat.completions.create({
             messages: [
@@ -59,11 +61,11 @@ Output ONLY valid JSON in this exact format with no other text:
             }
         }
         
-        // Ensure sum is 4
+        // Ensure sum is 14 (for 14 categories)
         const sum = Object.values(weights).reduce((a, b) => a + b, 0);
         if (sum > 0) {
             for (const k of Object.keys(weights)) {
-                weights[k] = (weights[k] * 4) / sum;
+                weights[k] = (weights[k] * 14) / sum;
             }
         }
 

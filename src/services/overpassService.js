@@ -5,10 +5,23 @@ const OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
 const USER_AGENT = 'LocationScoreApp/1.0 (+github.com/yourname)'
 
 const AMENITIES = {
-  education: ['school','university','library'],
-  entertainment: ['park','theatre','museum','cinema','arts_centre','zoo','playground','sports_centre','swimming_pool','gym'],
-  health: ['hospital','pharmacy','dentist'],
-  finance: ['bank','atm']
+  // Core categories (existing)
+  education: ['school','university','college','kindergarten','library','music_school','language_school','driving_school'],
+  entertainment: ['park','theatre','museum','cinema','arts_centre','zoo','playground','sports_centre','swimming_pool','gym','nightclub','casino','amusement_arcade','community_centre','social_centre'],
+  health: ['hospital','clinic','pharmacy','dentist','doctors','veterinary','nursing_home','baby_hatch'],
+  finance: ['bank','atm','bureau_de_change','money_transfer'],
+  
+  // New expanded categories
+  food: ['restaurant','cafe','fast_food','food_court','pub','bar','ice_cream','biergarten'],
+  shopping: ['marketplace','supermarket','convenience','mall','department_store','kiosk','greengrocer','butcher','bakery'],
+  transport: ['bus_station','taxi','car_rental','bicycle_rental','ferry_terminal','fuel','charging_station','parking','car_wash'],
+  tourism: ['hotel','motel','hostel','guest_house','apartment','camp_site','caravan_site','information','viewpoint','attraction','gallery'],
+  business: ['coworking_space','conference_centre','exhibition_centre','office'],
+  automotive: ['car_repair','motorcycle_repair','car_parts','car_dealer','bicycle_repair'],
+  services: ['post_office','post_box','telephone','internet_cafe','library','public_bookcase','salon','laundry','dry_cleaning','tailor','shoe_repair'],
+  religious: ['place_of_worship','monastery','shrine','temple','church','mosque','synagogue'],
+  civic: ['courthouse','fire_station','police','prison','post_office','townhall','embassy','community_centre'],
+  emergency: ['ambulance_station','fire_station','police','emergency_phone','lifeguard']
 }
 
 export function categories() {
