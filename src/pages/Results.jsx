@@ -199,14 +199,38 @@ export default function Results(){
           </div>
           <MapContainer center={[Number(input.lat), Number(input.lon)]} zoom={14} scrollWheelZoom={false} id="map">
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <Marker position={[Number(input.lat), Number(input.lon)]}>
-              <Popup>Origin</Popup>
+            {/* Red marker for current location */}
+            <Marker 
+              position={[Number(input.lat), Number(input.lon)]}
+              icon={L.icon({ 
+                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                shadowSize: [41, 41]
+              })}
+            >
+              <Popup><b>📍 Your Location</b></Popup>
             </Marker>
-            {Object.entries(data).flatMap(([cat, items]) => items.map((it,i)=>(
-              <Marker key={cat+i} position={[it.lat, it.lon]} icon={L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', iconSize: [25,41], iconAnchor:[12,41] })}>
-                <Popup><b>{it.name}</b><br/>{it.amenity}<br/>{cat}</Popup>
-              </Marker>
-            )))}
+            {/* Only show markers for categories with weight > 0 */}
+            {Object.entries(data).flatMap(([cat, items]) => {
+              const weight = weights[cat] || 0
+              if (weight === 0) return [] // Hide markers when priority is 0
+              return items.map((it,i)=>(
+                <Marker 
+                  key={cat+i} 
+                  position={[it.lat, it.lon]} 
+                  icon={L.icon({ 
+                    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', 
+                    iconSize: [25,41], 
+                    iconAnchor:[12,41] 
+                  })}
+                >
+                  <Popup><b>{it.name}</b><br/>{it.amenity}<br/>{cat}</Popup>
+                </Marker>
+              ))
+            })}
           </MapContainer>
         </motion.div>
       </div>
