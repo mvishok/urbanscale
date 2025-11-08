@@ -57,7 +57,12 @@ export default function App() {
     "I'm a college student looking for a PG",
     "Family with kids, need schools and parks",
     "Looking for a place near hospitals",
-    "Young professional, need gyms and cafes"
+    "Young professional, need gyms and cafes",
+    "Family relocating, need schools and temples",
+    "Starting a motorcycle repair shop",
+    "Senior citizen looking for quiet residential area",
+    "Young professional needs cafes and coworking spaces",
+    "Shop owner setting up a clothing store"
   ]
 
   return (

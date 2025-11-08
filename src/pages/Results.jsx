@@ -15,7 +15,12 @@ import { motion } from 'framer-motion'
 export default function Results(){
   const { state } = useLocation()
   const { input, result } = state || {}
-  const [weights, setWeights] = useState(result?.scoring?.weights || { education:1, entertainment:1, health:1, finance:1 })
+  const [weights, setWeights] = useState(result?.scoring?.weights || { 
+    education:1, entertainment:1, health:1, finance:1,
+    food:1, shopping:1, transport:1, tourism:1,
+    business:1, automotive:1, services:1, religious:1,
+    civic:1, emergency:1
+  })
   const [score, setScore] = useState(result?.scoring)
   const [air, setAir] = useState(null)
   const [commute, setCommute] = useState(null)
@@ -79,7 +84,8 @@ export default function Results(){
   function normalizeWeights(w){
     const sum = Object.values(w).reduce((a,b)=>a+Number(b),0) || 1
     const norm = {}
-    for (const k of Object.keys(w)) norm[k] = Number(w[k]) * (4/sum)
+    // Normalize to sum of 14 (for 14 categories)
+    for (const k of Object.keys(w)) norm[k] = Number(w[k]) * (14/sum)
     return norm
   }
 
@@ -154,7 +160,8 @@ export default function Results(){
         </div>
       </motion.header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {/* First Row: Overall Score and Map */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -197,37 +204,53 @@ export default function Results(){
             )))}
           </MapContainer>
         </motion.div>
+      </div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card">
+      {/* Second Row: Adjust Priorities - Full Width */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card mb-6">
           <h4 className="font-semibold mb-3 text-lg">Adjust Priorities</h4>
-          {['education','entertainment','health','finance'].map(k => (
-            <div key={k} className="mb-4 last:mb-0">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="capitalize font-medium">{k}</span>
-                <span className="text-indigo-400 font-semibold">{(weights[k]||0).toFixed(2)}</span>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {['education','entertainment','health','finance','food','shopping','transport','tourism','business','automotive','services','religious','civic','emergency'].map(k => (
+              <div key={k} className="mb-2 last:mb-0">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="capitalize font-medium">{k}</span>
+                  <span className="text-indigo-400 font-semibold">{(weights[k]||0).toFixed(2)}</span>
+                </div>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="3" 
+                  step="0.1" 
+                  defaultValue={weights[k]} 
+                  onChange={e=>setWeights(w=>normalizeWeights({ ...w, [k]: Number(e.target.value) }))}
+                  className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                />
               </div>
-              <input 
-                type="range" 
-                min="0" 
-                max="3" 
-                step="0.1" 
-                defaultValue={weights[k]} 
-                onChange={e=>setWeights(w=>normalizeWeights({ ...w, [k]: Number(e.target.value) }))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-              />
-            </div>
-          ))}
+            ))}
+          </div>
           <p className="text-xs text-slate-500 mt-4 p-3 bg-slate-800/50 rounded-lg">
             💡 Adjust sliders to prioritize what matters to you. Scores update in real-time!
           </p>
         </motion.div>
 
+      {/* Third Row: Category Score Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
         {Object.entries(score?.categoryScores || {}).map(([cat, v], idx) => {
           const icons = {
             education: '🎓',
             entertainment: '🎭',
             health: '🏥',
-            finance: '💰'
+            finance: '💰',
+            food: '🍽️',
+            shopping: '🛒',
+            transport: '🚌',
+            tourism: '🏨',
+            business: '💼',
+            automotive: '🔧',
+            services: '📮',
+            religious: '⛪',
+            civic: '🏛️',
+            emergency: '🚨'
           }
           return (
             <motion.div key={cat}
@@ -252,49 +275,76 @@ export default function Results(){
             </motion.div>
           )
         })}
+      </div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card md:col-span-2">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div>
-              <h4 className="font-semibold text-lg">Commute Calculator</h4>
-              <p className="text-sm text-slate-400 mt-1">
-                {commute ? `🚗 Estimated driving time: ${Math.round(commute/60)} min` : 'Calculate travel time to any destination'}
-              </p>
-            </div>
-            <Button onClick={getCommute} className="btn-secondary whitespace-nowrap w-full sm:w-auto">
-              📍 Add Destination
-            </Button>
+      {/* Fourth Row: Commute, AQI, Water Quality, Green Ratio - 4 Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card">
+          <div className="text-center">
+            <div className="text-3xl mb-2">🚗</div>
+            <h4 className="font-semibold text-sm mb-2">Commute Time</h4>
+            {commute ? (
+              <div className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                {Math.round(commute/60)} min
+              </div>
+            ) : (
+              <Button onClick={getCommute} className="btn-secondary text-xs px-3 py-1.5 w-full">
+                Calculate
+              </Button>
+            )}
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card">
-          <h4 className="font-semibold mb-2">Air quality</h4>
-          {!air ? <p className="text-sm opacity-75">Loading...</p> :
-            !air.results || Object.keys(air.results).length === 0 ? (
-              <div className="text-sm opacity-75">
-                <p>{air.message || 'No air quality data available'}</p>
-                {air.location && (
-                  <p className="mt-2 text-xs">Nearest station: {air.location.name} ({Math.round(air.location.distance)}m away)</p>
-                )}
-              </div>
+          <div className="text-center">
+            <div className="text-3xl mb-2">🌫️</div>
+            <h4 className="font-semibold text-sm mb-2">Air Quality (AQI)</h4>
+            {!air ? (
+              <p className="text-xs opacity-75">Loading...</p>
             ) : (
               <div>
-                {air.location && (
-                  <p className="text-xs opacity-70 mb-3">
-                    Data from {air.location.name} ({(air.location.distance / 1000).toFixed(1)}km away)
-                  </p>
-                )}
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {Object.entries(air.results).map(([key, val]) => (
-                    <div key={key} className="bg-slate-800 rounded-xl px-3 py-2">
-                      <div className="text-xs opacity-70 uppercase mb-1">{key}</div>
-                      <div className="font-semibold">{val.value?.toFixed(2)} {val.unit}</div>
-                    </div>
-                  ))}
+                <div className={`text-2xl font-bold ${
+                  air.aqi <= 50 ? 'text-green-400' : 
+                  air.aqi <= 100 ? 'text-yellow-400' : 
+                  air.aqi <= 150 ? 'text-orange-400' : 
+                  'text-red-400'
+                }`}>
+                  {air.aqi || 'N/A'}
                 </div>
+                <div className="text-xs text-slate-400 mt-1">{air.aqiLevel}</div>
               </div>
-            )
-          }
+            )}
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card">
+          <div className="text-center">
+            <div className="text-3xl mb-2">💧</div>
+            <h4 className="font-semibold text-sm mb-2">Water Quality</h4>
+            <div className="text-xs text-slate-500 mt-3">
+              Not Available
+            </div>
+            <p className="text-xs text-slate-600 mt-1">No public API</p>
+          </div>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card">
+          <div className="text-center">
+            <div className="text-3xl mb-2">🌳</div>
+            <h4 className="font-semibold text-sm mb-2">Green Ratio</h4>
+            {!air ? (
+              <p className="text-xs opacity-75">Loading...</p>
+            ) : air.greenRatio !== null && air.greenRatio !== undefined ? (
+              <div>
+                <div className="text-2xl font-bold text-green-400">
+                  {air.greenRatio}%
+                </div>
+                <div className="text-xs text-slate-400 mt-1">Parks & Forest</div>
+              </div>
+            ) : (
+              <div className="text-xs text-slate-500 mt-3">Calculating...</div>
+            )}
+          </div>
         </motion.div>
       </div>
     </div>
